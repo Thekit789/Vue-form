@@ -10,7 +10,9 @@
         <div class="form-grid">
           <!-- First Name -->
           <div class="form-group">
-            <label for="firstName" class="form-label">ชื่อจริง <span class="required-star">*</span></label>
+            <label for="firstName" class="form-label"
+              >ชื่อจริง <span class="required-star">*</span></label
+            >
             <input
               type="text"
               id="firstName"
@@ -40,7 +42,9 @@
 
           <!-- Phone Number -->
           <div class="form-group full-width">
-            <label for="phoneNumber" class="form-label">เบอร์โทรศัพท์ <span class="required-star">*</span></label>
+            <label for="phoneNumber" class="form-label"
+              >เบอร์โทรศัพท์ <span class="required-star">*</span></label
+            >
             <input
               type="tel"
               id="phoneNumber"
@@ -92,7 +96,9 @@
 
           <!-- Notes -->
           <div class="form-group full-width">
-            <label for="notes" class="form-label">หมายเหตุ <span class="required-star">*</span></label>
+            <label for="notes" class="form-label"
+              >หมายเหตุ <span class="required-star">*</span></label
+            >
             <textarea
               id="notes"
               v-model="form.notes"
@@ -108,13 +114,7 @@
         </div>
 
         <div class="submit-container">
-          <button
-            type="submit"
-            :disabled="!isFormValid"
-            class="submit-button"
-          >
-            บันทึกข้อมูล
-          </button>
+          <button type="submit" :disabled="!isFormValid" class="submit-button">บันทึกข้อมูล</button>
         </div>
       </form>
     </div>
@@ -135,15 +135,13 @@
 
     <!-- Success Message -->
     <transition name="fade">
-      <div v-if="showSuccessMessage" class="success-message">
-        บันทึกข้อมูลเรียบร้อยแล้ว!
-      </div>
+      <div v-if="showSuccessMessage" class="success-message">บันทึกข้อมูลเรียบร้อยแล้ว!</div>
     </transition>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch } from 'vue'
 
 // --- STATE MANAGEMENT ---
 const form = reactive({
@@ -153,82 +151,123 @@ const form = reactive({
   carModel: 'Wave 110',
   salesType: 'Cash',
   notes: '',
-});
+})
 
 const touched = reactive({
   firstName: false,
   phoneNumber: false,
   notes: false,
-});
+})
 
-const showConfirmModal = ref(false);
-const showSuccessMessage = ref(false);
+const showConfirmModal = ref(false)
+const showSuccessMessage = ref(false)
 
-const carModels = ref(['Wave 110', 'Wave 125', 'Scoopy i', 'Click 160', 'Click 125', 'Giorno', 'Lead', 'Forza', 'ADV160', 'ADV350']);
-const salesTypes = ref(['Cash', 'Installment', 'Financing']);
+const carModels = ref([
+  'Wave 110',
+  'Wave 125',
+  'Scoopy i',
+  'Click 160',
+  'Click 125',
+  'Giorno',
+  'Lead',
+  'Forza',
+  'ADV160',
+  'ADV350',
+])
+const salesTypes = ref(['Cash', 'Installment', 'Financing'])
 
 // --- VALIDATIONS ---
 const validations = reactive({
-  isFirstNameValid: computed(() => /^[a-zA-Zก-ฮะ-์\s]+$/.test(form.firstName.trim()) && form.firstName.trim().length > 0),
+  isFirstNameValid: computed(
+    () => /^[a-zA-Zก-ฮะ-์\s]+$/.test(form.firstName.trim()) && form.firstName.trim().length > 0,
+  ),
   isPhoneNumberValid: computed(() => /^\d{10}$/.test(form.phoneNumber.trim())),
   isNotesValid: computed(() => form.notes.trim().length >= 15),
-});
+})
 
-const isFormValid = computed(() => validations.isFirstNameValid && validations.isPhoneNumberValid && validations.isNotesValid);
+const isFormValid = computed(
+  () => validations.isFirstNameValid && validations.isPhoneNumberValid && validations.isNotesValid,
+)
 
 // --- METHODS ---
 const filterAlpha = (event) => {
-  const value = event.target.value.replace(/[^a-zA-Zก-ฮะ-์\s]/g, '');
-  if (event.target.id === 'firstName') form.firstName = value;
-  if (event.target.id === 'lastName') form.lastName = value;
-};
+  const value = event.target.value.replace(/[^a-zA-Zก-ฮะ-์\s]/g, '')
+  if (event.target.id === 'firstName') form.firstName = value
+  if (event.target.id === 'lastName') form.lastName = value
+}
 
 const filterNumeric = (event) => {
-  form.phoneNumber = event.target.value.replace(/\D/g, '');
-};
+  form.phoneNumber = event.target.value.replace(/\D/g, '')
+}
 
 const resetForm = () => {
-  Object.assign(form, { firstName: '', lastName: '', phoneNumber: '', carModel: 'Wave 110', salesType: 'Cash', notes: '' });
-  Object.keys(touched).forEach(key => { touched[key] = false; });
-};
+  Object.assign(form, {
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    carModel: 'Wave 110',
+    salesType: 'Cash',
+    notes: '',
+  })
+  Object.keys(touched).forEach((key) => {
+    touched[key] = false
+  })
+}
 
 const submitForm = () => {
-  Object.keys(touched).forEach(key => { touched[key] = true; });
+  Object.keys(touched).forEach((key) => {
+    touched[key] = true
+  })
   if (isFormValid.value) {
-    showConfirmModal.value = true;
+    showConfirmModal.value = true
   }
-};
+}
 
 const confirmSubmission = () => {
-  const leadData = { ...form, submissionDate: new Date().toISOString() };
-  console.log('--- Data Saved ---');
-  console.log(JSON.stringify(leadData, null, 2));
+  const leadData = { ...form, submissionDate: new Date().toISOString() }
+  console.log('--- Data Saved ---')
+  console.log(JSON.stringify(leadData, null, 2))
 
-  showConfirmModal.value = false;
-  showSuccessMessage.value = true;
+  showConfirmModal.value = false
+  showSuccessMessage.value = true
 
   setTimeout(() => {
-    showSuccessMessage.value = false;
-  }, 3000);
+    showSuccessMessage.value = false
+  }, 3000)
 
-  resetForm();
-};
+  resetForm()
+}
 
 const cancelSubmission = () => {
-  showConfirmModal.value = false;
-};
+  showConfirmModal.value = false
+}
 
 // --- WATCHERS ---
-watch(() => form.firstName, () => { touched.firstName = true; });
-watch(() => form.phoneNumber, () => { touched.phoneNumber = true; });
-watch(() => form.notes, () => { touched.notes = true; });
+watch(
+  () => form.firstName,
+  () => {
+    touched.firstName = true
+  },
+)
+watch(
+  () => form.phoneNumber,
+  () => {
+    touched.phoneNumber = true
+  },
+)
+watch(
+  () => form.notes,
+  () => {
+    touched.notes = true
+  },
+)
 </script>
 
 <style scoped>
 /* General Page Styles */
 .form-page-container {
   font-family: 'Sarabun', sans-serif; /* Assuming you have this font imported globally */
-  background-image: linear-gradient(to bottom right, #f9fafb, #e0e7ff);
+  background-image: linear-gradient(135deg, #d4f4f8 0%, #effaed 100%);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -240,9 +279,11 @@ watch(() => form.notes, () => { touched.notes = true; });
   width: 100%;
   max-width: 56rem; /* 896px */
   position: relative;
-  background-color: #ffffff;
+  background-image: linear-gradient(to bottom, #f5f8fc, #f7f8fa);
   border-radius: 1.5rem; /* 24px */
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
   padding: 2.5rem;
 }
 
@@ -289,17 +330,21 @@ watch(() => form.notes, () => { touched.notes = true; });
   color: #ef4444;
 }
 
-.form-input, .form-textarea {
+.form-input,
+.form-textarea {
   width: 100%;
   padding: 0.75rem 1rem;
   background-color: #f9fafb;
   border: 1px solid #d1d5db;
   border-radius: 0.5rem; /* 8px */
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   box-sizing: border-box; /* Important for consistent sizing */
 }
 
-.form-input:focus, .form-textarea:focus {
+.form-input:focus,
+.form-textarea:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px #bfdbfe;
@@ -377,7 +422,9 @@ watch(() => form.notes, () => { touched.notes = true; });
   border: none;
   border-radius: 0.5rem;
   background-color: #2563eb;
-  transition: background-color 0.3s, transform 0.2s;
+  transition:
+    background-color 0.3s,
+    transform 0.2s;
   cursor: pointer;
 }
 .submit-button:hover:not(:disabled) {
@@ -392,7 +439,10 @@ watch(() => form.notes, () => { touched.notes = true; });
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -455,7 +505,9 @@ watch(() => form.notes, () => { touched.notes = true; });
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
   z-index: 50;
 }
 
