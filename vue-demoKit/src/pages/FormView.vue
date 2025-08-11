@@ -267,7 +267,8 @@ watch(
 /* General Page Styles */
 .form-page-container {
   font-family: 'Sarabun', sans-serif; /* Assuming you have this font imported globally */
-  background-image: linear-gradient(135deg, #d4f4f8 0%, #effaed 100%);
+  /* background-image: linear-gradient(135deg, #d4f4f8 0%, #effaed 100%); */
+  background: linear-gradient(to bottom, #0b0b2b, #1b2735 70%, #090a0f);
   min-height: 100vh;
   display: flex;
   align-items: center;
