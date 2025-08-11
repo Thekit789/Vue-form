@@ -8,7 +8,7 @@
     <div class="home-container">
       <router-link to="/form" class="form-button"> Go to Form Page </router-link>
       <span class="line"></span>
-      <router-link to="/form" class="form-button"> Go to Follow Page </router-link>
+      <router-link to="/follow" class="form-button"> Go to Follow Page </router-link>
     </div>
   </div>
 </template>
@@ -17,7 +17,7 @@
 // ไม่จำเป็นต้องใช้ script ใดๆ เพราะเป็น CSS Animation ล้วนๆ
 </script>
 
-<style>
+<style scoped>
 /* ใช้ style แบบ global (ไม่มี scoped)
   เพื่อให้ Animation และ Keyframes ทำงานได้อย่างถูกต้องกับทุก element
 */
@@ -27,7 +27,7 @@
   /* ใช้สไตล์จาก body เดิมของคุณมาไว้ที่นี่ */
   min-height: 100vh;
   background: linear-gradient(to bottom, #0b0b2b, #1b2735 70%, #090a0f);
-  overflow: hidden; /* ป้องกันไม่ให้ scroll bar ปรากฏตอนดาวตกวิ่งออกนอกจอ */
+  /* overflow-y: auto; ป้องกันไม่ให้ scroll bar ปรากฏตอนดาวตกวิ่งออกนอกจอ */
   position: relative; /* ทำให้เป็นจุดอ้างอิงของ element ลูก */
 }
 

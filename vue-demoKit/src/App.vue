@@ -21,6 +21,6 @@ html,
 body {
   /* กำหนดให้พื้นหลังเป็นสีดำสนิทและซ่อน scrollbar ที่ไม่จำเป็น */
   background-color: #000;
-  overflow: hidden;
+  overflow-y: auto;
 }
 </style>
