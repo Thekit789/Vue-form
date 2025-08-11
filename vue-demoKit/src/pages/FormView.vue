@@ -2,7 +2,7 @@
   <div class="form-page-container">
     <div class="form-wrapper">
       <div class="form-header">
-        <h1 class="form-title">ฟอร์มข้อมูลลูกค้าใหม่</h1>
+        <h1 class="form-title">ฟอร์มข้อมูลลูกค้าคาดหวัง</h1>
         <p class="form-subtitle">กรุณากรอกข้อมูลให้ครบถ้วน</p>
       </div>
 
@@ -20,7 +20,7 @@
               @input="filterAlpha"
               :class="{ 'error-border': touched.firstName && !validations.isFirstNameValid }"
               class="form-input"
-              placeholder="เช่น สมชาย"
+              placeholder="เช่น สมเด็จ"
             />
             <p v-if="touched.firstName && !validations.isFirstNameValid" class="error-message">
               กรุณากรอกชื่อจริง (เฉพาะตัวอักษร)
@@ -36,7 +36,7 @@
               v-model="form.lastName"
               @input="filterAlpha"
               class="form-input"
-              placeholder="เช่น ใจดี"
+              placeholder="เช่น ฮุนเซน"
             />
           </div>
 
@@ -149,7 +149,7 @@ const form = reactive({
   lastName: '',
   phoneNumber: '',
   carModel: 'Wave 110',
-  salesType: 'Cash',
+  salesType: 'ขายสด',
   notes: '',
 })
 
@@ -174,7 +174,7 @@ const carModels = ref([
   'ADV160',
   'ADV350',
 ])
-const salesTypes = ref(['Cash', 'Installment', 'Financing'])
+const salesTypes = ref(['ขายสด', 'ขายผ่อน', 'ขายไฟแนนซ์'])
 
 // --- VALIDATIONS ---
 const validations = reactive({
@@ -206,7 +206,7 @@ const resetForm = () => {
     lastName: '',
     phoneNumber: '',
     carModel: 'Wave 110',
-    salesType: 'Cash',
+    salesType: 'ขายสด',
     notes: '',
   })
   Object.keys(touched).forEach((key) => {
