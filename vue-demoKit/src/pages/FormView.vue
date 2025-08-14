@@ -41,7 +41,7 @@
           </div>
 
           <!-- Phone Number -->
-          <div class="form-group full-width">
+          <div class="form-group">
             <label for="phoneNumber" class="form-label"
               >เบอร์โทรศัพท์ <span class="required-star">*</span></label
             >
@@ -60,21 +60,66 @@
             </p>
           </div>
 
-          <!-- Car Model -->
-          <div class="form-group full-width">
-            <label class="form-label">รุ่นรถที่สนใจ <span class="required-star">*</span></label>
-            <div class="radio-group-grid">
-              <div v-for="model in carModels" :key="model" class="radio-item">
+          <!-- Source of Number -->
+          <div class="form-group">
+            <label class="form-label">ที่มาของเบอร์โทร <span class="required-star">*</span></label>
+            <div class="radio-group-flex">
+              <div v-for="source in sourceOfNumbers" :key="source" class="radio-item">
                 <input
                   type="radio"
-                  :id="model"
-                  :value="model"
-                  v-model="form.carModel"
+                  :id="source"
+                  :value="source"
+                  v-model="form.sourceOfNumber"
                   class="form-radio-custom"
                 />
-                <label :for="model" class="radio-label">{{ model }}</label>
+                <label :for="source" class="radio-label">{{ source }}</label>
               </div>
             </div>
+          </div>
+
+          <!-- Car Brand -->
+          <div class="form-group full-width">
+            <label class="form-label">ยี่ห้อรถที่สนใจ <span class="required-star">*</span></label>
+            <div class="radio-group-flex">
+              <div v-for="brand in carBrands" :key="brand" class="radio-item">
+                <input
+                  type="radio"
+                  :id="brand"
+                  :value="brand"
+                  v-model="form.brand"
+                  class="form-radio-custom"
+                />
+                <label :for="brand" class="radio-label">{{ brand }}</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Car Model Selection -->
+          <div class="form-group full-width">
+            <label for="carModel" class="form-label"
+              >รุ่นรถ <span class="required-star">*</span></label
+            >
+            <select
+              id="carModel"
+              v-model="form.carModel"
+              class="form-select"
+              :disabled="!form.brand"
+            >
+              <option disabled value="">-- เลือกรุ่นรถ --</option>
+              <template v-if="form.brand === 'Honda'">
+                <option v-for="model in hondaModels" :key="model" :value="model">
+                  {{ model }}
+                </option>
+              </template>
+              <template v-if="form.brand === 'Yamaha'">
+                <option v-for="model in yamahaModels" :key="model" :value="model">
+                  {{ model }}
+                </option>
+              </template>
+            </select>
+            <p v-if="touched.carModel && !validations.isCarModelValid" class="error-message">
+              กรุณาเลือกรุ่นรถ
+            </p>
           </div>
 
           <!-- Sales Type -->
@@ -105,7 +150,7 @@
               rows="4"
               :class="{ 'error-border': touched.notes && !validations.isNotesValid }"
               class="form-textarea"
-              placeholder="ระบุรายละเอียดเพิ่มเติม... (ต้องมีอย่างน้อย 15 ตัวอักษร)"
+              placeholder="ระบุรายละเอียดเพิ่มเติม... (อย่างน้อย 15 ตัวอักษร)"
             ></textarea>
             <p v-if="touched.notes && !validations.isNotesValid" class="error-message">
               กรุณากรอกหมายเหตุอย่างน้อย 15 ตัวอักษร
@@ -148,7 +193,9 @@ const form = reactive({
   firstName: '',
   lastName: '',
   phoneNumber: '',
-  carModel: 'Wave 110',
+  sourceOfNumber: 'เดินมาหน้าร้าน', // New field with default
+  brand: 'Honda', // New field for brand selection
+  carModel: '', // Will be populated by select
   salesType: 'ขายสด',
   notes: '',
 })
@@ -156,13 +203,17 @@ const form = reactive({
 const touched = reactive({
   firstName: false,
   phoneNumber: false,
+  carModel: false, // Added for car model validation
   notes: false,
 })
 
 const showConfirmModal = ref(false)
 const showSuccessMessage = ref(false)
 
-const carModels = ref([
+// --- STATIC DATA ---
+const sourceOfNumbers = ref(['เดินมาหน้าร้าน', 'โทรมาสอบถาม', 'ทักผ่านเพจร้าน', 'เดินตลาด'])
+const carBrands = ref(['Honda', 'Yamaha'])
+const hondaModels = ref([
   'Wave 110',
   'Wave 125',
   'Scoopy i',
@@ -174,6 +225,16 @@ const carModels = ref([
   'ADV160',
   'ADV350',
 ])
+const yamahaModels = ref([
+  'Finn',
+  'Exciter',
+  'NMAX',
+  'XSR155',
+  'MT-15',
+  'R15',
+  'Fazzio',
+  'Grand Filano',
+])
 const salesTypes = ref(['ขายสด', 'ขายผ่อน', 'ขายไฟแนนซ์'])
 
 // --- VALIDATIONS ---
@@ -182,11 +243,16 @@ const validations = reactive({
     () => /^[a-zA-Zก-ฮะ-์\s]+$/.test(form.firstName.trim()) && form.firstName.trim().length > 0,
   ),
   isPhoneNumberValid: computed(() => /^\d{10}$/.test(form.phoneNumber.trim())),
+  isCarModelValid: computed(() => form.carModel !== ''), // New validation
   isNotesValid: computed(() => form.notes.trim().length >= 15),
 })
 
 const isFormValid = computed(
-  () => validations.isFirstNameValid && validations.isPhoneNumberValid && validations.isNotesValid,
+  () =>
+    validations.isFirstNameValid &&
+    validations.isPhoneNumberValid &&
+    validations.isCarModelValid &&
+    validations.isNotesValid,
 )
 
 // --- METHODS ---
@@ -205,7 +271,9 @@ const resetForm = () => {
     firstName: '',
     lastName: '',
     phoneNumber: '',
-    carModel: 'Wave 110',
+    sourceOfNumber: 'เดินมาหน้าร้าน',
+    brand: 'Honda',
+    carModel: '',
     salesType: 'ขายสด',
     notes: '',
   })
@@ -244,6 +312,16 @@ const cancelSubmission = () => {
 
 // --- WATCHERS ---
 watch(
+  () => form.brand,
+  (newBrand, oldBrand) => {
+    if (newBrand !== oldBrand) {
+      form.carModel = '' // Reset car model when brand changes
+      touched.carModel = false
+    }
+  },
+)
+
+watch(
   () => form.firstName,
   () => {
     touched.firstName = true
@@ -253,6 +331,12 @@ watch(
   () => form.phoneNumber,
   () => {
     touched.phoneNumber = true
+  },
+)
+watch(
+  () => form.carModel,
+  () => {
+    touched.carModel = true
   },
 )
 watch(
@@ -266,8 +350,7 @@ watch(
 <style scoped>
 /* General Page Styles */
 .form-page-container {
-  font-family: 'Sarabun', sans-serif; /* Assuming you have this font imported globally */
-  /* background-image: linear-gradient(135deg, #d4f4f8 0%, #effaed 100%); */
+  font-family: 'Sarabun', sans-serif;
   background: linear-gradient(to bottom, #0b0b2b, #1b2735 70%, #090a0f);
   min-height: 100vh;
   display: flex;
@@ -278,10 +361,10 @@ watch(
 
 .form-wrapper {
   width: 100%;
-  max-width: 56rem; /* 896px */
+  max-width: 56rem;
   position: relative;
   background-image: linear-gradient(to bottom, #f5f8fc, #f7f8fa);
-  border-radius: 1.5rem; /* 24px */
+  border-radius: 1.5rem;
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -294,8 +377,8 @@ watch(
   text-align: center;
 }
 .form-title {
-  font-size: 2.25rem; /* 36px */
-  line-height: 2.5rem; /* 40px */
+  font-size: 2.25rem;
+  line-height: 2.5rem;
   font-weight: 700;
   color: #1f2937;
 }
@@ -308,7 +391,7 @@ watch(
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem 1.5rem;
+  gap: 1.5rem 2rem;
 }
 @media (min-width: 768px) {
   .form-grid {
@@ -318,37 +401,50 @@ watch(
 .form-group.full-width {
   grid-column: 1 / -1;
 }
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
 
 /* Form Elements */
 .form-label {
   display: block;
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.875rem;
   font-weight: 500;
   color: #374151;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 .required-star {
   color: #ef4444;
 }
 
 .form-input,
-.form-textarea {
+.form-textarea,
+.form-select {
   width: 100%;
   padding: 0.75rem 1rem;
   background-color: #f9fafb;
   border: 1px solid #d1d5db;
-  border-radius: 0.5rem; /* 8px */
+  border-radius: 0.5rem;
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
-  box-sizing: border-box; /* Important for consistent sizing */
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 1rem;
 }
 
 .form-input:focus,
-.form-textarea:focus {
+.form-textarea:focus,
+.form-select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px #bfdbfe;
+}
+
+.form-select:disabled {
+  background-color: #e5e7eb;
+  cursor: not-allowed;
 }
 
 /* Validation Styles */
@@ -357,40 +453,23 @@ watch(
 }
 .error-message {
   color: #ef4444;
-  font-size: 0.75rem; /* 12px */
+  font-size: 0.75rem;
   margin-top: 0.25rem;
 }
 
 /* Radio Buttons */
-.radio-group-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-@media (min-width: 640px) {
-  .radio-group-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (min-width: 768px) {
-  .radio-group-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
 .radio-group-flex {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
 }
-
 .radio-item {
   display: flex;
   align-items: center;
 }
 .radio-label {
   margin-left: 0.5rem;
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.875rem;
   color: #4b5563;
   cursor: pointer;
 }
@@ -453,15 +532,15 @@ watch(
 }
 .modal-content {
   background-color: white;
-  border-radius: 0.75rem; /* 12px */
+  border-radius: 0.75rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   padding: 2rem;
   width: 100%;
-  max-width: 28rem; /* 448px */
+  max-width: 28rem;
   text-align: center;
 }
 .modal-title {
-  font-size: 1.25rem; /* 20px */
+  font-size: 1.25rem;
   font-weight: 700;
   color: #1f2937;
 }
